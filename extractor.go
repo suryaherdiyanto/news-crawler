@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"golang.org/x/net/html"
 )
 
@@ -35,6 +37,24 @@ func GetAttribute(node *html.Node, name string) (html.Attribute, bool) {
 	return html.Attribute{}, false
 }
 
+func GetText(node *html.Node) (string, bool) {
+	text := ""
+
+	TransverseDecendants(node, func(node *html.Node) {
+		if node.Type == html.TextNode {
+			text = node.Data
+		}
+	})
+
+	text = strings.TrimSpace(text)
+
+	if text == "" {
+		return "", false
+	}
+
+	return text, true
+}
+
 func GetNewsLinks(doc *html.Node) []NewsLink {
 
 	var links []NewsLink
@@ -45,11 +65,17 @@ func GetNewsLinks(doc *html.Node) []NewsLink {
 
 		for _, anchorNode := range anchorNodes {
 			attr, ok := GetAttribute(&anchorNode, "href")
+			text, okText := GetText(&anchorNode)
+
 			if !ok || attr.Val == "#" {
 				continue
 			}
 
-			links = append(links, NewsLink{Title: anchorNode.DataAtom.String(), Url: attr.Val})
+			if !okText {
+				continue
+			}
+
+			links = append(links, NewsLink{Title: text, Url: attr.Val})
 		}
 	}
 

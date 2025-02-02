@@ -14,6 +14,11 @@ import (
 
 func main() {
 	url := os.Args[1]
+	page, err := strconv.Atoi(os.Args[2])
+
+	if err != nil {
+		panic(err)
+	}
 
 	extractor := NewLinkExtractor(url)
 
@@ -21,7 +26,7 @@ func main() {
 	var links []NewsLink
 	wg := sync.WaitGroup{}
 
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= page; i++ {
 		wg.Add(1)
 		time.Sleep(time.Millisecond + time.Duration(i*50))
 		if i == 1 {

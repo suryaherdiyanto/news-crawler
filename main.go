@@ -4,21 +4,22 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 
 	"golang.org/x/net/html"
 )
 
 func main() {
-	url, err := url.Parse(os.Args[1])
+	url := os.Args[1]
+
+	extractor := NewLinkExtractor(url)
+
+	fmt.Println("Fetching: " + url)
+	request, err := http.Get(url)
 
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("Fetching: " + url.String())
-	request, err := http.Get(url.String())
 	fmt.Println("Fetched, with status code: " + request.Status)
 
 	if request.StatusCode != 200 {
@@ -26,7 +27,7 @@ func main() {
 	}
 
 	doc, err := html.Parse(request.Body)
-	links := GetNewsLinks(doc)
+	links := GetNewsLinks(doc, extractor)
 
 	fmt.Println(links)
 	fmt.Println(len(links))

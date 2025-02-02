@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"golang.org/x/net/html"
@@ -43,5 +44,17 @@ func TestGetAttribute(t *testing.T) {
 
 	if attr.Val == "" {
 		t.Errorf("Expected to be not empty")
+	}
+}
+
+func TestGetText(t *testing.T) {
+	parsed, _ := html.Parse(strings.NewReader(`<a dtr-evt="newsfeed" dtr-sec="" dtr-act="artikel" onclick="_pt(this)" dtr-idx="12" dtr-id="7759540" dtr-ttl="Warga Khawatir Taman Tempat Nongkrong Mengarah Kriminal Jika Buka 24 Jam" href="https://news.detik.com/berita/d-7759540/warga-khawatir-taman-tempat-nongkrong-mengarah-kriminal-jika-buka-24-jam" class="media__link">
+                    <div class="replace_title">
+                        Warga Khawatir Taman Tempat Nongkrong Mengarah Kriminal Jika Buka 24 Jam                    </div>
+                </a>`))
+	text, _ := GetText(parsed)
+
+	if text != "Warga Khawatir Taman Tempat Nongkrong Mengarah Kriminal Jika Buka 24 Jam" {
+		t.Errorf("Expected: `Warga Khawatir Taman Tempat Nongkrong Mengarah Kriminal Jika Buka 24 Jam`, but got: %s", text)
 	}
 }

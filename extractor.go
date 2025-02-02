@@ -40,13 +40,14 @@ func GetAttribute(node *html.Node, name string) (html.Attribute, bool) {
 func GetText(node *html.Node) (string, bool) {
 	text := ""
 
-	TransverseDecendants(node, func(node *html.Node) {
-		if node.Type == html.TextNode {
-			text = node.Data
+	TransverseDecendants(node, func(n *html.Node) {
+		if n.Type == html.TextNode {
+			nodeText := strings.TrimSpace(n.Data)
+			if nodeText != "" {
+				text = nodeText
+			}
 		}
 	})
-
-	text = strings.TrimSpace(text)
 
 	if text == "" {
 		return "", false

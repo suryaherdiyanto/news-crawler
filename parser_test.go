@@ -58,3 +58,16 @@ func TestGetText(t *testing.T) {
 		t.Errorf("Expected: `Warga Khawatir Taman Tempat Nongkrong Mengarah Kriminal Jika Buka 24 Jam`, but got: %s", text)
 	}
 }
+
+func TestGetTextWithH2(t *testing.T) {
+	parsed, _ := html.Parse(strings.NewReader(`<a aria-label="link description" href="https://www.cnnindonesia.com/gaya-hidup/20250131130848-284-1193114/jangan-ditanam-5-tanaman-ini-bisa-mengundang-tikus-masuk-ke-rumah" dtr-evt="box terpopuler" dtr-sec="terpopuler" dtr-act="terpopuler" onclick="_pt(this)" dtr-idx="2" dtr-id="1193114" dtr-ttl="Jangan Ditanam, 5 Tanaman Ini Bisa Mengundang Tikus Masuk ke Rumah" class="group">
+                            <span class="text-cnn_grey text-lg absolute left-0"> 02 </span>
+                            <h2 class="text-base text-cnn_black_light group-hover:text-cnn_red">Jangan Ditanam, 5 Tanaman Ini Bisa Mengundang Tikus Masuk ke Rumah</h2>
+                            <span class="text-xs text-cnn_red">Gaya Hidup</span>
+                        </a>`))
+	text, _ := GetTextFromChilds(parsed, "h2")
+
+	if text != "Jangan Ditanam, 5 Tanaman Ini Bisa Mengundang Tikus Masuk ke Rumah" {
+		t.Errorf("Expected: `Jangan Ditanam, 5 Tanaman Ini Bisa Mengundang Tikus Masuk ke Rumah`, but got: %s", text)
+	}
+}

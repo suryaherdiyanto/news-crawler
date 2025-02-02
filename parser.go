@@ -68,3 +68,25 @@ func GetText(node *html.Node) (string, bool) {
 
 	return text, true
 }
+
+func GetTextFromChilds(node *html.Node, tag string) (string, bool) {
+	text := ""
+
+	TransverseDecendants(node, func(n *html.Node) {
+		if n.Data == tag {
+			c := n.FirstChild
+			if c.Type == html.TextNode {
+				nodeText := strings.TrimSpace(c.Data)
+				if nodeText != "" {
+					text = nodeText
+				}
+			}
+		}
+	})
+
+	if text == "" {
+		return "", false
+	}
+
+	return text, true
+}

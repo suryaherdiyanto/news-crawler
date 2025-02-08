@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -70,7 +71,8 @@ func (c *CnnNewsContent) GetThumbnail() string {
 }
 
 func (c *CnnNewsContent) GetPublishedAt() time.Time {
-	publishDate := GetMeta(c.html, "dtk:publishdate")
+	publishDate := GetMeta(c.html, "dtk:createddate")
+	fmt.Println(c.html.DataAtom.String())
 	t, err := time.Parse("2006/01/02 15:04:05 MST", publishDate + " WIB")
 
 	if err != nil {
@@ -81,8 +83,8 @@ func (c *CnnNewsContent) GetPublishedAt() time.Time {
 }
 
 func (c *CnnNewsContent) GetCreatedAt() time.Time {
-	publishDate := GetMeta(c.html, "dtk:createddate")
-	t, err := time.Parse("2006/01/02 15:04:05 MST", publishDate + " WIB")
+	createdDate := GetMeta(c.html, "dtk:createddate")
+	t, err := time.Parse("2006/01/02 15:04:05 MST", createdDate + " WIB")
 
 	if err != nil {
 		panic(err)

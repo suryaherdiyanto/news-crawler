@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"time"
@@ -58,13 +59,17 @@ func NewContentExtractor(u string) ContentExtractor {
 		panic(err)
 	}
 
-	content, err := http.Get(parsedUrl.String())
+	res, err := http.Get(parsedUrl.String())
 
 	if err != nil {
 		panic(err)
 	}
 
-	doc, err := html.Parse(content.Body)
+	if res.StatusCode != 200 {
+		panic(errors.New("Invalid status code: " + res.Status))
+	}
+
+	doc, err := html.Parse(res.Body)
 
 	if err != nil {
 		panic(err)

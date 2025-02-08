@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -42,6 +43,11 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
+			if request.StatusCode != 200 {
+				panic(errors.New("Unexpected status code : " + request.Status))
+			}
+
 			fmt.Printf("Crawled <%s> Status code: %d\n", url, request.StatusCode)
 
 			doc, err := html.Parse(request.Body)

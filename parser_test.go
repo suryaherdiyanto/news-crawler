@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -45,6 +46,24 @@ func TestGetAttribute(t *testing.T) {
 	if attr.Val == "" {
 		t.Errorf("Expected to be not empty")
 	}
+}
+
+func TestGetMetaTag(t *testing.T) {
+	f, _ := os.Open("./stub/cnn.html")
+	defer f.Close()
+
+	parsed, err := html.Parse(f)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	meta := GetMeta(parsed, "description")
+	if meta == "" {
+		t.Error("The meta should not be empty string")
+	}
+
+	fmt.Println(meta)
 }
 
 func TestGetText(t *testing.T) {

@@ -40,6 +40,20 @@ func GetTags(doc *html.Node, tagName string) []html.Node {
 	return nodes
 }
 
+func GetMetaTag(doc *html.Node, tagName string, metaName string) (html.Attribute, bool) {
+	metas := GetTags(doc, "meta")
+	
+	for _, meta := range metas {
+		attr, ok := GetAttribute(&meta, tagName)
+
+		if ok && attr.Val == metaName {
+			return GetAttribute(&meta, "content")
+		}
+	}
+
+	return html.Attribute{}, false
+}
+
 func GetAttribute(node *html.Node, name string) (html.Attribute, bool) {
 	for _, attr := range node.Attr {
 		if attr.Key == name {
@@ -48,6 +62,16 @@ func GetAttribute(node *html.Node, name string) (html.Attribute, bool) {
 	}
 
 	return html.Attribute{}, false
+}
+
+func GetMeta(node *html.Node, val string) string {
+	meta, ok := GetMetaTag(node, "name", val)
+
+	if !ok {
+		return ""
+	}
+
+	return meta.Val
 }
 
 func GetText(node *html.Node) (string, bool) {
@@ -89,4 +113,31 @@ func GetTextFromChilds(node *html.Node, tag string) (string, bool) {
 	}
 
 	return text, true
+}
+
+func GetNewsLinks(doc *html.Node, extractor LinkExtractor) []NewsLink {
+
+	var links []NewsLink
+
+	articles := extractor.GetArticleTags(doc)
+	for _, articleNode := range articles {
+		anchorNodes := GetTags(&articleNode, "a")
+
+		for _, anchorNode := range anchorNodes {
+			attr, ok := GetAttribute(&anchorNode, "href")
+			text := extractor.GetLinkText(&anchorNode)
+
+			if !ok || attr.Val == "#" {
+				continue
+			}
+
+			if text == "" {
+				continue
+			}
+
+			links = append(links, NewsLink{Title: text, Url: attr.Val})
+		}
+	}
+
+	return links
 }

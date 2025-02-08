@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/url"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -11,8 +12,22 @@ type LinkExtractor interface {
 	GetLinkText(node *html.Node) string
 }
 
+type ContentExtractor interface {
+	GetTitle() string
+	GetExcerpt() string
+	GetContent() string
+	GetThumbnail() string
+	GetPublishedAt() time.Time
+	GetUpdatedAt() time.Time
+	GetCreatedAt() time.Time
+}
+
 type CnnNews struct {
 	Url string
+}
+
+type CnnNewsContent struct {
+	html *html.Node
 }
 
 func (c *CnnNews) GetArticleTags(node *html.Node) []html.Node {
@@ -37,31 +52,4 @@ func NewLinkExtractor(u string) LinkExtractor {
 	default:
 		return &CnnNews{}
 	}
-}
-
-func GetNewsLinks(doc *html.Node, extractor LinkExtractor) []NewsLink {
-
-	var links []NewsLink
-
-	articles := extractor.GetArticleTags(doc)
-	for _, articleNode := range articles {
-		anchorNodes := GetTags(&articleNode, "a")
-
-		for _, anchorNode := range anchorNodes {
-			attr, ok := GetAttribute(&anchorNode, "href")
-			text := extractor.GetLinkText(&anchorNode)
-
-			if !ok || attr.Val == "#" {
-				continue
-			}
-
-			if text == "" {
-				continue
-			}
-
-			links = append(links, NewsLink{Title: text, Url: attr.Val})
-		}
-	}
-
-	return links
 }
